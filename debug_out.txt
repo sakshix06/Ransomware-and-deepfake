@@ -1,0 +1,96 @@
+﻿[dotenv@17.2.3] injecting env (8) from backend\.env -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+Dotenv result: Success
+GEMINI_API_KEY exists: true
+GEMINI_API_KEY length: 39
+node : Chat API error: 
+[GoogleGenerativeAI 
+Error]: Error fetching 
+from https://generativelan
+guage.googleapis.com/v1bet
+a/models/gemini-2.0-flash:
+generateContent: [429 Too 
+Many Requests] You 
+exceeded your current 
+quota, please check your 
+plan and billing details. 
+For more information on 
+this error, head to: https
+://ai.google.dev/gemini-ap
+i/docs/rate-limits. To 
+monitor your current 
+usage, head to: https://ai
+.dev/rate-limit. 
+At line:1 char:1
++ node debug_key.cjs 2>&1 
+| Out-File -FilePath 
+debug_out.txt -Encoding  
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (C  
+  hat API error:...ev/r   
+ ate-limit. :String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+* Quota exceeded for 
+metric: generativelanguage
+.googleapis.com/generate_c
+ontent_free_tier_requests,
+ limit: 0, model: 
+gemini-2.0-flash
+* Quota exceeded for 
+metric: generativelanguage
+.googleapis.com/generate_c
+ontent_free_tier_requests,
+ limit: 0, model: 
+gemini-2.0-flash
+* Quota exceeded for 
+metric: generativelanguage
+.googleapis.com/generate_c
+ontent_free_tier_input_tok
+en_count, limit: 0, 
+model: gemini-2.0-flash
+Please retry in 
+20.579096494s. [{"@type":"
+type.googleapis.com/google
+.rpc.Help","links":[{"desc
+ription":"Learn more 
+about Gemini API quotas","
+url":"https://ai.google.de
+v/gemini-api/docs/rate-lim
+its"}]},{"@type":"type.goo
+gleapis.com/google.rpc.Quo
+taFailure","violations":[{
+"quotaMetric":"generativel
+anguage.googleapis.com/gen
+erate_content_free_tier_re
+quests","quotaId":"Generat
+eRequestsPerDayPerProjectP
+erModel-FreeTier","quotaDi
+mensions":{"model":"gemini
+-2.0-flash","location":"gl
+obal"}},{"quotaMetric":"ge
+nerativelanguage.googleapi
+s.com/generate_content_fre
+e_tier_requests","quotaId"
+:"GenerateRequestsPerMinut
+ePerProjectPerModel-FreeTi
+er","quotaDimensions":{"mo
+del":"gemini-2.0-flash","l
+ocation":"global"}},{"quot
+aMetric":"generativelangua
+ge.googleapis.com/generate
+_content_free_tier_input_t
+oken_count","quotaId":"Gen
+erateContentInputTokensPer
+ModelPerMinute-FreeTier","
+quotaDimensions":{"locatio
+n":"global","model":"gemin
+i-2.0-flash"}}]},{"@type":
+"type.googleapis.com/googl
+e.rpc.RetryInfo","retryDel
+ay":"20s"}]
+Response: Vanguard AI Engine is processing requests via secure heuristic protocols. Your system is safe and monitored. How else can I assist with your cybersecurity needs?
