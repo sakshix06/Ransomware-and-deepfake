@@ -9,7 +9,7 @@ router.post("/analyze", async (req, res) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "AI analysis failed",
+      message: err.message || "AI analysis failed",
     });
   }
 });

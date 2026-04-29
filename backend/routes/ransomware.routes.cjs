@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const aiService = require("../services/ai-service.cjs");
+const RansomEvent = require("../models/RansomEvent.cjs");
 
 /* ===== STATE ===== */
 let currentThreats = 0;
@@ -23,10 +24,22 @@ router.get("/live-status", (req, res) => {
 });
 
 /* ===== CONTROLS ===== */
-router.post("/detect", (req, res) => {
-  currentThreats++;
-  console.log("⚠️ Ransomware activity detected!");
-  res.json({ message: "Ransomware logged" });
+router.post("/detect", async (req, res) => {
+  try {
+    currentThreats++;
+    const newEvent = new RansomEvent({
+      filesModified: req.body.filesModified || 1200,
+      entropySpike: req.body.entropySpike !== undefined ? req.body.entropySpike : true,
+      threatLevel: req.body.threatLevel || "High"
+    });
+    await newEvent.save();
+
+    console.log("⚠️ Ransomware activity detected and saved!");
+    res.json({ message: "Ransomware logged to MongoDB", event_id: newEvent._id });
+  } catch (err) {
+    console.error("Error saving ransomware event:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.post("/simulate-threat", (req, res) => {
@@ -40,16 +53,7 @@ router.post("/clear-threats", (req, res) => {
 });
 
 /* ===== AI ANALYSIS ===== */
-router.post("/ai-analysis", async (req, res) => {
-  const coverage = Math.max(90 - currentThreats * 15, 50);
-
-  const aiResponse = await aiService.analyzeThreat({
-    threats: currentThreats,
-    coverage,
-  });
-
-  res.json({ success: true, aiResponse });
-});
+// Moved to ai.routes.cjs
 
 /* ===== CHATBOT API ===== */
 router.post("/chat", async (req, res) => {

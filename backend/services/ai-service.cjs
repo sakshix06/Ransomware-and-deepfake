@@ -5,30 +5,18 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 /* =========================
-   RULE-BASED FALLBACK
+   GEMINI API INTEGRATION
 ========================= */
-function fallbackAnalysis(context) {
-  return {
-    threatType: "Ransomware (Heuristics)",
-    killChainStage: "Execution / Impact",
-    riskScore: Math.min(50 + context.threats * 15, 95),
-    explanation:
-      "Rule-based analysis detected abnormal encryption behavior and suspicious process activity consistent with ransomware. The AI module is currently offline due to missing API keys or connectivity, so default containment protocols are enforced.",
-    recommendedAction:
-      "Immediately isolate affected systems from the network and initiate incident response runbooks.",
-    aiMode: "rule-based",
-  };
-}
 
 /* =========================
    GEMINI API INTEGRATION
 ========================= */
 async function geminiAnalysis(context) {
-  try {
-    if (!process.env.GEMINI_API_KEY) {
-      return fallbackAnalysis(context);
-    }
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("AI module offline: GEMINI_API_KEY is missing.");
+  }
 
+  try {
     const prompt = `
 You are an advanced cybersecurity AI agent analyzing a ransomware threat on a dashboard.
 Current Metrics:
@@ -51,12 +39,8 @@ Provide a highly concise, authoritative, and direct explanation. No Markdown. 3-
       aiMode: "gemini",
     };
   } catch (err) {
-    if (err.message && err.message.includes('429')) {
-      console.warn("⚠️ Gemini Analysis API Quota Exceeded. Using fallback protocols.");
-    } else {
-      console.error("Gemini Analysis Error:", err.message);
-    }
-    return fallbackAnalysis(context);
+    console.error("Gemini Analysis Error:", err.message);
+    throw new Error("AI analysis failed: " + err.message);
   }
 }
 
@@ -117,12 +101,7 @@ async function analyzeDeepfakeThreat(context) {
    MAIN ENTRY POINT
 ========================= */
 async function analyzeThreat(context) {
-  try {
-    return await geminiAnalysis(context);
-  } catch (err) {
-    console.warn("⚠️ Gemini analysis skipped/failed:", err.message);
-    return fallbackAnalysis(context);
-  }
+  return await geminiAnalysis(context);
 }
 
 async function chatWithAssistant(message, history) {

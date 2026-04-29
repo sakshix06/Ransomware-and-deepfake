@@ -39,12 +39,30 @@ const DashboardSection = () => {
 
   const explainThreat = async () => {
     setLoadingAI(true);
-    const res = await fetch("http://localhost:5000/api/ransomware/ai-analysis", {
-      method: "POST",
-    });
-    const data = await res.json();
-    setAiData(data.aiResponse);
-    setLoadingAI(false);
+    const threatsCount = liveStatus?.threats ?? 0;
+    const currentCoverage = aiData ? Math.max(100 - aiData.riskScore, 30) : 90;
+    
+    try {
+      const res = await fetch("http://localhost:5000/api/ai/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ threats: threatsCount, coverage: currentCoverage }),
+      });
+      const data = await res.json();
+      
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to fetch AI analysis");
+      }
+      
+      setAiData(data.aiResponse);
+    } catch (err: any) {
+      console.error("AI Analysis Error:", err);
+      setAiData({ error: err.message });
+    } finally {
+      setLoadingAI(false);
+    }
   };
 
   /* =========================
@@ -181,6 +199,10 @@ const DashboardSection = () => {
         {loadingAI ? (
           <p className="text-yellow-400 animate-pulse">
             Analyzing threat…
+          </p>
+        ) : aiData?.error ? (
+          <p className="text-red-400 bg-red-900/20 p-4 rounded border border-red-800">
+            ❌ {aiData.error}
           </p>
         ) : aiData ? (
           <>

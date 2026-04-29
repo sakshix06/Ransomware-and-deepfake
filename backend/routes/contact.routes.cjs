@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const ContactMessage = require('../models/ContactMessage.cjs');
 
 router.post('/', async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -10,6 +11,9 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    const newMessage = new ContactMessage({ name, email, subject, message });
+    await newMessage.save();
+
     // Use Gmail service with environment variables
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -34,10 +38,10 @@ router.post('/', async (req, res) => {
 
     console.log('Message sent: %s', info.messageId);
 
-    res.status(200).json({ success: true, message: 'Message sent successfully.' });
+    res.status(200).json({ success: true, message: 'Message saved and sent successfully.' });
   } catch (error) {
     console.error('Contact form email error:', error);
-    res.status(500).json({ error: 'Failed to send message. Please try again later.' });
+    res.status(500).json({ error: 'Failed to process message. Please try again later.' });
   }
 });
 

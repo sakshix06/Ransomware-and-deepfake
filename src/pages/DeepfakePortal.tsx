@@ -22,11 +22,22 @@ const DeepfakePortal: React.FC = () => {
   const [mediaType, setMediaType] = useState<MediaType>(null);
   const [mediaUrl, setMediaUrl] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultData | null>(null);
-const sendToBackend = async (confidenceScore: number) => {
+const sendToBackend = async (confidenceScore: number, resultData?: AnalysisResultData) => {
   try {
     await sendRansomwareEvent();
-    await sendDeepfakeEvent();
-    await correlateThreat();
+    if (resultData) {
+      await sendDeepfakeEvent({
+        mediaType: resultData.mediaType,
+        confidenceScore: resultData.confidenceScore,
+        isDeepfake: resultData.isDeepfake,
+        markers: resultData.markers,
+        analysisExplanation: resultData.aiExplanation,
+        metadata: resultData.metadata
+      });
+    } else {
+      await sendDeepfakeEvent({ confidenceScore });
+    }
+    await correlateThreat(75, confidenceScore);
 
     toast.success("Threat correlation completed (backend)");
   } catch (err) {
@@ -104,7 +115,7 @@ const sendToBackend = async (confidenceScore: number) => {
             };
             setAnalysisResult(mockResult);
             setState('results');
-            sendToBackend(mockResult.confidenceScore);
+            sendToBackend(mockResult.confidenceScore, mockResult);
             return;
          }
        }
@@ -231,7 +242,7 @@ const sendToBackend = async (confidenceScore: number) => {
 setState('results');
 
 // 🔗 send data to backend (NO UI CHANGE)
-sendToBackend(mockResult.confidenceScore);
+sendToBackend(mockResult.confidenceScore, mockResult);
 
     }, 3000);
   };

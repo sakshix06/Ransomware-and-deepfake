@@ -18,6 +18,7 @@ app.use("/api/deepfake", require("./routes/deepfake.routes.cjs"));
 app.use("/api/correlate", require("./routes/correlate.routes.cjs"));
 app.use("/api/auth", require("./routes/auth.routes.cjs"));
 app.use("/api/contact", require("./routes/contact.routes.cjs"));
+app.use("/api/ai", require("./routes/ai.routes.cjs"));
 
 app.get("/", (req, res) => {
   res.send("RansomGuard Backend is running");

@@ -1,23 +1,30 @@
 const express = require("express");
 const router = express.Router();
 const aiService = require("../services/ai-service.cjs");
+const DeepfakeEvent = require("../models/DeepfakeEvent.cjs");
 
 // Mock state counter for dashboard simulation (optional to connect to Dashboard directly)
 let deepfakeDetections = 0;
 
-router.post("/detect", (req, res) => {
-  const { mediaType, probability, confidence } = req.body;
-  
-  // Log the event
-  console.log(`Deepfake Detected: [${mediaType}] - Confidence: ${confidence} (${probability}%)`);
-  deepfakeDetections++;
+router.post("/detect", async (req, res) => {
+  try {
+    const data = req.body;
+    
+    const newEvent = new DeepfakeEvent(data);
+    await newEvent.save();
 
-  // Add the threat response for deepfakes
-  res.json({
-    status: "success",
-    message: "Deepfake threat metadata logged successfully",
-    event_id: `evt_${Date.now()}`
-  });
+    console.log(`Deepfake Detected & Saved: [${data.mediaType || 'unknown'}] - Confidence: ${data.confidenceScore || data.probability || 'N/A'}`);
+    deepfakeDetections++;
+
+    res.json({
+      status: "success",
+      message: "Deepfake threat metadata logged successfully to MongoDB",
+      event_id: newEvent._id
+    });
+  } catch (err) {
+    console.error("Error saving deepfake event:", err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
 });
 
 router.post("/ai-analysis", async (req, res) => {
